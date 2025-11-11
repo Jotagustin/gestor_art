@@ -1,0 +1,21 @@
+{% extends 'gestor_artes/base.html' %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+  <h1>Iniciar sesión</h1>
+  <form method="post" action="/iniciar_sesion">
+    {% csrf_token %}
+    <div>
+      <label>Nombre de usuario:</label>
+      <input type="text" name="nombre_usuario" maxlength="15" required />
+    </div>
+    <div>
+      <label>Contraseña:</label>
+      <input type="password" name="password_usuario" maxlength="20" required />
+    </div>
+    <div style="margin-top:8px">
+      <button type="submit" class="btn">Entrar</button>
+    </div>
+  </form>
+{% endblock %}

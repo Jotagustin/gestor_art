@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{% block title %}Proyecto Artísticos{% endblock %}</title>
+    <style>
+      body{font-family: Arial, sans-serif; margin:20px}
+      nav a{margin-right:12px}
+      .mensaje{padding:10px;background:#f0f8ff;border:1px solid #bcd}
+      table{border-collapse:collapse;width:100%}
+      table th, table td{border:1px solid #ddd;padding:8px;text-align:left}
+      .acciones form{display:inline}
+      .btn{padding:6px 10px;border:1px solid #666;background:#eee;border-radius:4px;text-decoration:none;color:#000}
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/">Inicio</a>
+        <a href="/menu_admin">Menu Admin</a>
+        <a href="/menu_operador">Menu Operador</a>
+        <a href="/listar_colaboraciones">Colaboraciones</a>
+        <a href="/listar_historial">Historial</a>
+        {% if request.session.usuario %}
+          <span style="margin-left:12px">Usuario: {{ request.session.usuario }}</span>
+          <a href="/cerrar_sesion" class="btn">Cerrar sesión</a>
+        {% endif %}
+      </nav>
+      <hr />
+    </header>
+
+    {% if mensaje %}
+      <div class="mensaje">{{ mensaje }}</div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <footer>
+      <hr />
+      <small>Proyecto Artísticos - Plantillas básicas</small>
+    </footer>
+  </body>
+</html>

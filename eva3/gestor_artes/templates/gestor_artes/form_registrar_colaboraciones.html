@@ -1,0 +1,40 @@
+{% extends 'gestor_artes/base.html' %}
+
+{% block title %}Registrar Colaboración{% endblock %}
+
+{% block content %}
+  <h1>Registrar Colaboración</h1>
+  <form method="post" action="/registrar_colaboracion">
+    {% csrf_token %}
+    <div>
+      <label>Proyecto:</label>
+      <select name="proyecto_id" required>
+        <option value="">-- seleccione --</option>
+        {% for p in proyectos %}
+          <option value="{{ p.id }}">{{ p.titulo }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Artista:</label>
+      <select name="artista_id" required>
+        <option value="">-- seleccione --</option>
+        {% for a in artistas %}
+          <option value="{{ a.id }}">{{ a.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Valor:</label>
+      <input type="number" name="valor" required />
+    </div>
+    <div>
+      <label>Fecha registro:</label>
+      <input type="text" name="fecha_registro" placeholder="YYYY-MM-DD" required />
+    </div>
+    <div style="margin-top:8px">
+      <button type="submit" class="btn">Registrar</button>
+      <a href="/listar_colaboraciones" class="btn">Volver</a>
+    </div>
+  </form>
+{% endblock %}

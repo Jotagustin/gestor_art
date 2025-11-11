@@ -1,0 +1,53 @@
+{% extends 'gestor_artes/base.html' %}
+
+{% block title %}Listado de Colaboraciones{% endblock %}
+
+{% block content %}
+  <h1>Colaboraciones</h1>
+
+  <form method="get" action="/listar_colaboraciones">
+    <label for="proyecto_id">Filtrar por Proyecto:</label>
+    <select name="proyecto_id" id="proyecto_id">
+      <option value="">-- Todos --</option>
+      {% for p in proyectos %}
+        <option value="{{ p.id }}" {% if request.GET.proyecto_id == p.id|stringformat:"s" %}selected{% endif %}>{{ p.titulo }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn">Filtrar</button>
+    <a href="/form_registrar_colaboracion" class="btn">Registrar nueva</a>
+  </form>
+
+  <table style="margin-top:12px">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Proyecto</th>
+        <th>Artista</th>
+        <th>Valor</th>
+        <th>Fecha registro</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in colaboraciones %}
+        <tr>
+          <td>{{ c.id }}</td>
+          <td>{{ c.proyecto.titulo }}</td>
+          <td>{{ c.artista.nombre }}</td>
+          <td>{{ c.valor }}</td>
+          <td>{{ c.fecha_registro }}</td>
+          <td class="acciones">
+            <a href="/form_actualizar_colaboracion?id={{ c.id }}" class="btn">Editar</a>
+            <form method="post" action="/eliminar_colaboracion" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="colaboracion_id" value="{{ c.id }}" />
+              <button type="submit" class="btn" onclick="return confirm('Eliminar esta colaboración?')">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6">No hay colaboraciones.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

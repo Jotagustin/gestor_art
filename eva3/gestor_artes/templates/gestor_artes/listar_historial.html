@@ -1,0 +1,31 @@
+{% extends 'gestor_artes/base.html' %}
+
+{% block title %}Historial{% endblock %}
+
+{% block content %}
+  <h1>Historial de acciones</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Descripción</th>
+        <th>Tabla afectada</th>
+        <th>Fecha / Hora</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for h in historial %}
+        <tr>
+          <td>{{ h.id }}</td>
+          <td>{{ h.usuario.nombre_usuario }}</td>
+          <td>{{ h.descripcion_historial }}</td>
+          <td>{{ h.tabla_afectada_historial }}</td>
+          <td>{{ h.fecha_hora_historial }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5">No hay registros en el historial.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
