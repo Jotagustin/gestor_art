@@ -8,7 +8,7 @@ class Artistas(models.Model):
 
 class Colaboraciones(models.Model):
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='proyectos_colab')
-    artista = models.ForeignKey(Proyecto, on_delete=models.CASCADE, related_name='artistas_colab')
+    artista = models.ForeignKey(Artistas, on_delete=models.CASCADE, related_name='artistas_colab')
     valor = models.IntegerField()
     fecha_registro = models.CharField(max_length=100)
 

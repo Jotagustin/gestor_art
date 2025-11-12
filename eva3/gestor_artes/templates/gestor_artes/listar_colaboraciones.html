@@ -5,49 +5,71 @@
 {% block content %}
   <h1>Colaboraciones</h1>
 
-  <form method="get" action="/listar_colaboraciones">
-    <label for="proyecto_id">Filtrar por Proyecto:</label>
-    <select name="proyecto_id" id="proyecto_id">
-      <option value="">-- Todos --</option>
-      {% for p in proyectos %}
-        <option value="{{ p.id }}" {% if request.GET.proyecto_id == p.id|stringformat:"s" %}selected{% endif %}>{{ p.titulo }}</option>
-      {% endfor %}
-    </select>
-    <button type="submit" class="btn">Filtrar</button>
-    <a href="/form_registrar_colaboracion" class="btn">Registrar nueva</a>
-  </form>
 
-  <table style="margin-top:12px">
+  <section style="margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; border-radius: 6px;">
+    <h3>Filtros de búsqueda</h3>
+
+    <form method="post" action="/listar_colaboraciones/filtroEmpieza" style="margin-top:10px;">
+      {% csrf_token %}
+      <label>Proyecto empieza con:</label>
+      <input type="text" name="txtfil" placeholder="Ej: Pintura" required>
+      <button type="submit">Buscar</button>
+    </form>
+
+    <form method="post" action="/listar_colaboraciones/filtroContenga" style="margin-top:10px;">
+      {% csrf_token %}
+      <label>Artista contiene:</label>
+      <input type="text" name="txtfil" placeholder="Ej: Juan" required>
+      <button type="submit">Buscar</button>
+    </form>
+
+    <form method="post" action="/listar_colaboraciones/filtroEntre" style="margin-top:10px;">
+      {% csrf_token %}
+      <label>Filtrar por valor entre:</label>
+      <input type="number" name="txtval1" placeholder="Valor mínimo" required>
+      <input type="number" name="txtval2" placeholder="Valor máximo" required>
+      <button type="submit">Filtrar</button>
+    </form>
+
+    <form method="get" action="/listar_colaboraciones" style="margin-top:10px;">
+      <button type="submit">Mostrar todo</button>
+    </form>
+  </section>
+
+
+  <table style="width:100%; border-collapse:collapse; margin-top:12px;">
     <thead>
-      <tr>
-        <th>ID</th>
-        <th>Proyecto</th>
-        <th>Artista</th>
-        <th>Valor</th>
-        <th>Fecha registro</th>
-        <th>Acciones</th>
+      <tr style="background:#f0f0f0;">
+        <th style="padding:8px;">ID</th>
+        <th style="padding:8px;">Proyecto</th>
+        <th style="padding:8px;">Artista</th>
+        <th style="padding:8px;">Valor</th>
+        <th style="padding:8px;">Fecha registro</th>
+        <th style="padding:8px;">Acciones</th>
       </tr>
     </thead>
     <tbody>
-      {% for c in colaboraciones %}
-        <tr>
-          <td>{{ c.id }}</td>
-          <td>{{ c.proyecto.titulo }}</td>
-          <td>{{ c.artista.nombre }}</td>
-          <td>{{ c.valor }}</td>
-          <td>{{ c.fecha_registro }}</td>
-          <td class="acciones">
-            <a href="/form_actualizar_colaboracion?id={{ c.id }}" class="btn">Editar</a>
-            <form method="post" action="/eliminar_colaboracion" style="display:inline">
-              {% csrf_token %}
-              <input type="hidden" name="colaboracion_id" value="{{ c.id }}" />
-              <button type="submit" class="btn" onclick="return confirm('Eliminar esta colaboración?')">Eliminar</button>
-            </form>
-          </td>
-        </tr>
-      {% empty %}
-        <tr><td colspan="6">No hay colaboraciones.</td></tr>
-      {% endfor %}
+      {% if colaboraciones %}
+        {% for c in colaboraciones %}
+          <tr>
+            <td style="padding:8px;">{{ c.id }}</td>
+            <td style="padding:8px;">{{ c.proyecto.titulo }}</td>
+            <td style="padding:8px;">{{ c.artista.nombre }}</td>
+            <td style="padding:8px;">{{ c.valor }}</td>
+            <td style="padding:8px;">{{ c.fecha_registro }}</td>
+            <td style="padding:8px;">
+              <a href="/form_actualizar_colaboracion?id={{ c.id }}" class="btn">Editar</a>
+              <form method="post" action="/eliminar_colaboracion" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="colaboracion_id" value="{{ c.id }}">
+                <button type="submit" onclick="return confirm('¿Eliminar esta colaboración?')">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="6" style="text-align:center; padding:10px;">No se encontraron resultados.</td></tr>
+      {% endif %}
     </tbody>
   </table>
 {% endblock %}
