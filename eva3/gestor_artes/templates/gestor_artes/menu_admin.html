@@ -3,9 +3,18 @@
 {% block title %}Menú Admin{% endblock %}
 
 {% block content %}
-  <h1>Menú - Admin</h1>
-  <ul>
-    <li><a href="/listar_historial">Ver Historial</a></li>
-    <li><a href="/listar_colaboraciones">Ver Colaboraciones</a></li>
-  </ul>
+  <div class="container mt-4">
+    <h1>Menú - Admin</h1>
+    <div class="list-group">
+      <a href="{% url 'mostrar_listar_historial' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-history"></i> Ver Historial
+      </a>
+      <a href="{% url 'mostrar_listar_colaboraciones' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-users"></i> Ver Colaboraciones
+      </a>
+      <a href="{% url 'mostrar_form_crear_proyecto' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-plus"></i> Crear Proyecto
+      </a>
+    </div>
+  </div>
 {% endblock %}

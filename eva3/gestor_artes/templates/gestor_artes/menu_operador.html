@@ -3,9 +3,18 @@
 {% block title %}Menú Operador{% endblock %}
 
 {% block content %}
-  <h1>Menú - Operador</h1>
-  <ul>
-    <li><a href="/listar_colaboraciones">Listar Colaboraciones</a></li>
-    <li><a href="/form_registrar_colaboracion">Registrar Colaboración</a></li>
-  </ul>
+  <div class="container mt-4">
+    <h1>Menú - Operador</h1>
+    <div class="list-group">
+      <a href="{% url 'mostrar_listar_colaboraciones' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-list"></i> Listar Colaboraciones
+      </a>
+      <a href="{% url 'mostrar_form_registrar_colaboracion' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-plus"></i> Registrar Colaboración
+      </a>
+      <a href="{% url 'mostrar_form_crear_proyecto' %}" class="list-group-item list-group-item-action">
+        <i class="fas fa-project-diagram"></i> Crear Proyecto
+      </a>
+    </div>
+  </div>
 {% endblock %}
