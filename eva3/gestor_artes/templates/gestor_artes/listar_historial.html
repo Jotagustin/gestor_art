@@ -1,33 +1,70 @@
 {% extends 'gestor_artes/base.html' %}
 
-{% block title %}Historial{% endblock %}
+{% block title %}Historial de Auditoría{% endblock %}
 
 {% block content %}
-  <h1 class="mb-3">Historial de acciones</h1>
-  <div class="table-responsive">
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Usuario</th>
-          <th>Descripción</th>
-          <th>Tabla afectada</th>
-          <th>Fecha / Hora</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for h in historial %}
-          <tr>
-            <td>{{ h.id }}</td>
-            <td>{{ h.usuario.nombre_usuario }}</td>
-            <td>{{ h.descripcion_historial }}</td>
-            <td>{{ h.tabla_afectada_historial }}</td>
-            <td>{{ h.fecha_hora_historial }}</td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="5">No hay registros en el historial.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1><i class="fas fa-history"></i> Historial de Auditoría</h1>
+          <span class="badge bg-secondary">Usuario: {{ usuario_actual }}</span>
+        </div>
+        
+        {% if historial %}
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th><i class="fas fa-hashtag"></i> ID</th>
+                  <th><i class="fas fa-user"></i> Usuario</th>
+                  <th><i class="fas fa-tag"></i> Rol</th>
+                  <th><i class="fas fa-info-circle"></i> Descripción</th>
+                  <th><i class="fas fa-database"></i> Tabla Afectada</th>
+                  <th><i class="fas fa-clock"></i> Fecha / Hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for h in historial %}
+                  <tr>
+                    <td>{{ h.id }}</td>
+                    <td>
+                      <strong>{{ h.usuario.username }}</strong>
+                    </td>
+                    <td>
+                      <span class="badge {% if h.usuario.rolname == 'ADMIN' %}bg-danger{% else %}bg-primary{% endif %}">
+                        {{ h.usuario.rolname }}
+                      </span>
+                    </td>
+                    <td>{{ h.descripcion_historial }}</td>
+                    <td>
+                      <span class="badge bg-success">{{ h.tabla_afectada_historial }}</span>
+                    </td>
+                    <td>
+                      <small>
+                        {{ h.fecha_hora_historial|date:"d/m/Y" }}<br>
+                        {{ h.fecha_hora_historial|time:"H:i:s" }}
+                      </small>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-2x mb-2"></i>
+            <h5>No hay registros en el historial</h5>
+            <p class="mb-0">Aún no se han registrado acciones en el sistema.</p>
+          </div>
+        {% endif %}
+        
+        <div class="mt-4">
+          <a href="{% url 'mostrar_menu_admin' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al Panel Admin
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock %}

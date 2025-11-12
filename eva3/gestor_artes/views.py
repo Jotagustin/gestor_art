@@ -1,5 +1,21 @@
 from django.shortcuts import render
-from .models import Colaboraciones, Proyecto, Artistas, Usuario, Rol
+from .models import Colaboraciones, Proyecto, Artistas, Usuario, Rol, Historial
+
+def registrar_historial(request, descripcion, tabla_afectada):
+    """Registra una acción en el historial de auditoría"""
+    try:
+        if request.session.get('usuario'):
+            from datetime import datetime
+            usuario_obj = Usuario.objects.filter(username=request.session['usuario']).first()
+            if usuario_obj:
+                Historial.objects.create(
+                    usuario=usuario_obj,
+                    descripcion_historial=descripcion,
+                    tabla_afectada_historial=tabla_afectada,
+                    fecha_hora_historial=datetime.now()
+                )
+    except Exception as e:
+        print(f"Error al registrar historial: {e}")
 
 def verificar_sesion(request):
 
@@ -42,6 +58,9 @@ def validar_usuario(request):
             request.session['usuario'] = usuario.username
             request.session['rol'] = usuario.rolname.upper()
 
+            # Registrar inicio de sesión en historial
+            registrar_historial(request, f"Inicio de sesión - Usuario {usuario.username} con rol {usuario.rolname}", "Usuario")
+
             rolActual = (usuario.rolname).upper()
             if rolActual == 'ARTISTA':
                 return render(request, 'gestor_artes/menu_operador.html', {'mensaje': f'Bienvenido {usuario.username}'})
@@ -65,11 +84,30 @@ def crear_cuenta(request):
     password = request.POST['password']
     Usu = Usuario(username=username, password=password, rolname=Rol.ARTISTA)
     Usu.save()
-    mensaje = ''
+    
+
+    try:
+        from datetime import datetime
+        admin_user = Usuario.objects.filter(rolname='ADMIN').first()
+        if admin_user:
+            Historial.objects.create(
+                usuario=admin_user,
+                descripcion_historial=f"Nueva cuenta creada para usuario: {username}",
+                tabla_afectada_historial="Usuario",
+                fecha_hora_historial=datetime.now()
+            )
+    except Exception as e:
+        print(f"Error al registrar creación de cuenta: {e}")
+    
+    mensaje = 'Cuenta creada exitosamente'
     return render(request, 'gestor_artes/login.html', {'mensaje': mensaje})
 
 def cerrarSesion(request):
     try:
+        # Registrar cierre de sesión antes de eliminar la sesión
+        if request.session.get('usuario'):
+            registrar_historial(request, f"Cierre de sesión - Usuario {request.session['usuario']}", "Usuario")
+        
         del request.session['usuario']
         del request.session['rol']
     except Exception:
@@ -149,19 +187,30 @@ def eliminarColaboracion(request):
     })
 
 def mostrarListarHistorial(request):
-    auth_check = verificar_sesion(request)
-    if auth_check:
-        return auth_check
-    
-    # Validación de rol dentro de la vista
-    if request.session.get('rol') != 'ADMIN':
-        return render(request, 'gestor_artes/login.html', {
-            'mensaje': 'Acceso denegado: Solo los administradores pueden acceder a esta sección'
-        })
-    
-    return render(request, 'gestor_artes/listar_historial.html', {
-        'historial': [],
-    })
+    try:
+        auth_check = verificar_sesion(request)
+        if auth_check:
+            return auth_check
+        
+        # Validación de rol - solo ADMIN puede ver historial
+        if request.session.get('rol') != 'ADMIN':
+            return render(request, 'gestor_artes/login.html', {
+                'mensaje': 'Acceso denegado: Solo los administradores pueden acceder a esta sección'
+            })
+        
+        # Obtener historial ordenado por fecha descendente
+        historial = Historial.objects.select_related('usuario').all().order_by('-fecha_hora_historial')
+        
+        datos = {
+            'usuario_actual': request.session.get('usuario'),
+            'historial': historial
+        }
+        
+        return render(request, 'gestor_artes/listar_historial.html', datos)
+        
+    except Exception as e:
+        print(f"Error al obtener historial: {e}")
+        return render(request, 'gestor_artes/login.html', {'mensaje': 'Error al obtener historial'})
 
 def mostrarFormCrearProyecto(request):
     auth_check = verificar_rol_operador(request)
@@ -182,6 +231,10 @@ def registrarProyecto(request):
 
     p = Proyecto(titulo=titulo)
     p.save()
+    
+    # Registrar creación de proyecto en historial
+    registrar_historial(request, f"Proyecto creado: {titulo}", "Proyecto")
+    
     return render(request, 'gestor_artes/menu_operador.html', {'mensaje': f'Proyecto "{titulo}" creado'})
 
 def filtroEmpieza(request):
