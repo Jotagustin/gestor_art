@@ -9,6 +9,19 @@ def verificar_sesion(request):
         })
     return None
 
+def verificar_rol_operador(request):
+
+    auth_check = verificar_sesion(request)
+    if auth_check:
+        return auth_check
+    
+    if request.session.get('rol') == 'ADMIN':
+        return render(request, 'gestor_artes/login.html', {
+            'mensaje': 'Acceso denegado: Los administradores deben usar el Panel Admin'
+        })
+    return None
+
+
 def mostrarLogin(request):
     return render(request, 'gestor_artes/login.html')
 
@@ -27,6 +40,7 @@ def validar_usuario(request):
 
         if usuario:
             request.session['usuario'] = usuario.username
+            request.session['rol'] = usuario.rolname.upper()
 
             rolActual = (usuario.rolname).upper()
             if rolActual == 'ARTISTA':
@@ -35,7 +49,7 @@ def validar_usuario(request):
                 return render(request, 'gestor_artes/menu_admin.html', {'mensaje': f'Bienvenido {usuario.username}'})
             return render(request, 'gestor_artes/login.html', {'mensaje': 'Rol no reconocido'})
 
-        return render(request, 'gestor_artes/login.html', {'r2': 'Error De Usuario o Contraseña!!'})
+        return render(request, 'gestor_artes/login.html', {'r2': 'Error De Usuario o Contraseña'})
 
     except Exception as error:
         print('validar_usuario fallo:', error)
@@ -57,6 +71,7 @@ def crear_cuenta(request):
 def cerrarSesion(request):
     try:
         del request.session['usuario']
+        del request.session['rol']
     except Exception:
         pass
     return render(request, 'gestor_artes/login.html', {'mensaje': 'Sesión cerrada'})
@@ -65,16 +80,22 @@ def mostrarMenuAdmin(request):
     auth_check = verificar_sesion(request)
     if auth_check:
         return auth_check
+    
+    if request.session.get('rol') != 'ADMIN':
+        return render(request, 'gestor_artes/login.html', {
+            'mensaje': 'Acceso denegado: Solo los administradores pueden acceder a esta sección'
+        })
+    
     return render(request, 'gestor_artes/menu_admin.html')
 
 def mostrarMenuOperador(request):
-    auth_check = verificar_sesion(request)
+    auth_check = verificar_rol_operador(request)
     if auth_check:
         return auth_check
     return render(request, 'gestor_artes/menu_operador.html')
 
 def mostrarListarColaboraciones(request):
-    auth_check = verificar_sesion(request)
+    auth_check = verificar_rol_operador(request)
     if auth_check:
         return auth_check
     colaboraciones = Colaboraciones.objects.all()
@@ -82,7 +103,7 @@ def mostrarListarColaboraciones(request):
     return render(request, 'gestor_artes/listar_colaboraciones.html', datos)
 
 def mostrarFormRegistrarColaboracion(request):
-    auth_check = verificar_sesion(request)
+    auth_check = verificar_rol_operador(request)
     if auth_check:
         return auth_check
     return render(request, 'gestor_artes/form_registrar_colaboraciones.html', {
@@ -131,18 +152,25 @@ def mostrarListarHistorial(request):
     auth_check = verificar_sesion(request)
     if auth_check:
         return auth_check
+    
+    # Validación de rol dentro de la vista
+    if request.session.get('rol') != 'ADMIN':
+        return render(request, 'gestor_artes/login.html', {
+            'mensaje': 'Acceso denegado: Solo los administradores pueden acceder a esta sección'
+        })
+    
     return render(request, 'gestor_artes/listar_historial.html', {
         'historial': [],
     })
 
 def mostrarFormCrearProyecto(request):
-    auth_check = verificar_sesion(request)
+    auth_check = verificar_rol_operador(request)
     if auth_check:
         return auth_check
     return render(request, 'gestor_artes/form_crear_proyecto.html')
 
 def registrarProyecto(request):
-    auth_check = verificar_sesion(request)
+    auth_check = verificar_rol_operador(request)
     if auth_check:
         return auth_check
     if request.method != 'POST':
@@ -154,9 +182,8 @@ def registrarProyecto(request):
 
     p = Proyecto(titulo=titulo)
     p.save()
-    return render(request, 'gestor_artes/menu_admin.html', {'mensaje': f'Proyecto "{titulo}" creado'})
+    return render(request, 'gestor_artes/menu_operador.html', {'mensaje': f'Proyecto "{titulo}" creado'})
 
-# Funciones de filtrado (de la versión local)
 def filtroEmpieza(request):
     auth_check = verificar_sesion(request)
     if auth_check:

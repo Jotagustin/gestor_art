@@ -29,24 +29,21 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             {% if request.session.usuario %}
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Menús
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'mostrar_menu_admin' %}">Menu Admin</a></li>
-                  <li><a class="dropdown-item" href="{% url 'mostrar_menu_operador' %}">Menu Operador</a></li>
-                </ul>
-              </li>
-              <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_listar_colaboraciones' %}">Colaboraciones</a></li>
-              <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_listar_historial' %}">Historial</a></li>
-              <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_form_crear_proyecto' %}">Crear Proyecto</a></li>
+              {% if request.session.rol == 'ADMIN' %}
+                <!-- Menú solo para ADMIN -->
+                <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_menu_admin' %}">Panel Admin</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_listar_historial' %}">Historial</a></li>
+              {% else %}
+                <!-- Menú solo para ARTISTA/OPERADOR -->
+                <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_menu_operador' %}">Panel Operador</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_listar_colaboraciones' %}">Colaboraciones</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'mostrar_form_crear_proyecto' %}">Crear Proyecto</a></li>
+              {% endif %}
             </ul>
             {% endif %}
             <div class="d-flex">
               {% if request.session.usuario %}
-                <span class="navbar-text text-white me-2">Usuario: {{ request.session.usuario }}</span>
+                <span class="navbar-text text-white me-2">Usuario: {{ request.session.usuario }} ({{ request.session.rol }})</span>
                 <a href="{% url 'cerrar_sesion' %}" class="btn btn-outline-light">Cerrar sesión</a>
               {% else %}
                 <a href="{% url 'mostrar_login' %}" class="btn btn-outline-light">Iniciar sesión</a>
