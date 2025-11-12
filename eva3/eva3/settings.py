@@ -1,6 +1,6 @@
 from pathlib import Path
 
-    
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -65,13 +65,13 @@ WSGI_APPLICATION = 'eva3.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'evaluacion3',
-        'USER': 'django_user',
-        'PASSWORD': '2405',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': 'eva3',
+        'USER': 'root',
+        'PASSWORD': 'cristianx2202',
+        'PORT': 3306
     }
 }
+
 
 
 # Password validation

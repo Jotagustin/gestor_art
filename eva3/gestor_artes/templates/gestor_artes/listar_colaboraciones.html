@@ -13,23 +13,54 @@
         <a href="/form_registrar_colaboracion" class="btn btn-success">Registrar nueva</a>
       </div>
     </div>
+
     <div class="card-body">
-      <form method="get" action="/listar_colaboraciones" class="row g-2 mb-3 align-items-end">
-        <div class="col-auto">
-          <label for="proyecto_id" class="form-label">Filtrar por Proyecto:</label>
-        </div>
-        <div class="col-auto">
-          <select name="proyecto_id" id="proyecto_id" class="form-select">
-            <option value="">-- Todos --</option>
-            {% for p in proyectos %}
-              <option value="{{ p.id }}" {% if request.GET.proyecto_id == p.id|stringformat:"s" %}selected{% endif %}>{{ p.titulo }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary">Filtrar</button>
-        </div>
-      </form>
+      <!-- FILTROS PERSONALIZADOS -->
+      <div class="border rounded p-3 mb-4 bg-light">
+        <h6 class="fw-bold mb-3">Filtros de búsqueda</h6>
+
+        <form method="post" action="/listar_colaboraciones/filtroEmpieza" class="row g-2 mb-2">
+          {% csrf_token %}
+          <div class="col-md-4">
+            <label class="form-label">Proyecto empieza con:</label>
+            <input type="text" name="txtfil" class="form-control" placeholder="Ej: Pintura" required>
+          </div>
+          <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-outline-primary">Buscar</button>
+          </div>
+        </form>
+
+        <form method="post" action="/listar_colaboraciones/filtroContenga" class="row g-2 mb-2">
+          {% csrf_token %}
+          <div class="col-md-4">
+            <label class="form-label">Artista contiene:</label>
+            <input type="text" name="txtfil" class="form-control" placeholder="Ej: Juan" required>
+          </div>
+          <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-outline-primary">Buscar</button>
+          </div>
+        </form>
+
+        <form method="post" action="/listar_colaboraciones/filtroEntre" class="row g-2 mb-2">
+          {% csrf_token %}
+          <div class="col-md-3">
+            <label class="form-label">Valor mínimo:</label>
+            <input type="number" name="txtval1" class="form-control" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Valor máximo:</label>
+            <input type="number" name="txtval2" class="form-control" required>
+          </div>
+          <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+          </div>
+        </form>
+
+        <form method="get" action="/listar_colaboraciones" class="mt-2">
+          <button type="submit" class="btn btn-secondary btn-sm">Mostrar todo</button>
+        </form>
+      </div>
+      <!-- FIN FILTROS -->
 
       {% if colaboraciones %}
         <div class="table-responsive">
@@ -56,7 +87,7 @@
                     <a href="/form_actualizar_colaboracion?id={{ c.id }}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
                     <form method="post" action="/eliminar_colaboracion" style="display:inline">
                       {% csrf_token %}
-                      <input type="hidden" name="colaboracion_id" value="{{ c.id }}" />
+                      <input type="hidden" name="colaboracion_id" value="{{ c.id }}">
                       <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Eliminar esta colaboración?')">Eliminar</button>
                     </form>
                   </td>
