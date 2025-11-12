@@ -22,7 +22,10 @@ def mostrarMenuOperador(request):
 
 # 🧩 Colaboraciones (Operador)
 def mostrarListarColaboraciones(request):
-    pass
+    colaboraciones = Colaboraciones.objects.all()
+    datos = {'colaboraciones': colaboraciones}
+    return render(request, 'gestor_artes/listar_colaboraciones.html', datos)
+
 
 def mostrarFormRegistrarColaboracion(request):
     pass
