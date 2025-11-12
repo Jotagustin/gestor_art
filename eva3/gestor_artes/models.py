@@ -12,10 +12,12 @@ class Colaboraciones(models.Model):
     valor = models.IntegerField()
     fecha_registro = models.CharField(max_length=100)
 
-class Rol(models.Model):
-    rolname = models.CharField(max_length=100)
+class Rol(models.TextChoices):
+    ADMIN = 'ADMIN', 'Admin'
+    OPERADOR = 'OPERADOR', 'Operador'
+    ARTISTA = 'ARTISTA', 'Artista'
 
 class Usuario(models.Model):
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-    rolname = models.ForeignKey(Rol, on_delete=models.CASCADE)
+    rolname = models.CharField(max_length=20, choices=Rol.choices, default=Rol.OPERADOR)

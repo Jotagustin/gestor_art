@@ -3,73 +3,75 @@
 {% block title %}Listado de Colaboraciones{% endblock %}
 
 {% block content %}
-  <h1>Colaboraciones</h1>
+  <div class="app-card card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="h5 mb-0">Colaboraciones</h2>
+        <div class="muted-small">Lista de colaboraciones registradas en el sistema</div>
+      </div>
+      <div>
+        <a href="/form_registrar_colaboracion" class="btn btn-success">Registrar nueva</a>
+      </div>
+    </div>
+    <div class="card-body">
+      <form method="get" action="/listar_colaboraciones" class="row g-2 mb-3 align-items-end">
+        <div class="col-auto">
+          <label for="proyecto_id" class="form-label">Filtrar por Proyecto:</label>
+        </div>
+        <div class="col-auto">
+          <select name="proyecto_id" id="proyecto_id" class="form-select">
+            <option value="">-- Todos --</option>
+            {% for p in proyectos %}
+              <option value="{{ p.id }}" {% if request.GET.proyecto_id == p.id|stringformat:"s" %}selected{% endif %}>{{ p.titulo }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+      </form>
 
-
-  <section style="margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; border-radius: 6px;">
-    <h3>Filtros de búsqueda</h3>
-
-    <form method="post" action="/listar_colaboraciones/filtroEmpieza" style="margin-top:10px;">
-      {% csrf_token %}
-      <label>Proyecto empieza con:</label>
-      <input type="text" name="txtfil" placeholder="Ej: Pintura" required>
-      <button type="submit">Buscar</button>
-    </form>
-
-    <form method="post" action="/listar_colaboraciones/filtroContenga" style="margin-top:10px;">
-      {% csrf_token %}
-      <label>Artista contiene:</label>
-      <input type="text" name="txtfil" placeholder="Ej: Juan" required>
-      <button type="submit">Buscar</button>
-    </form>
-
-    <form method="post" action="/listar_colaboraciones/filtroEntre" style="margin-top:10px;">
-      {% csrf_token %}
-      <label>Filtrar por valor entre:</label>
-      <input type="number" name="txtval1" placeholder="Valor mínimo" required>
-      <input type="number" name="txtval2" placeholder="Valor máximo" required>
-      <button type="submit">Filtrar</button>
-    </form>
-
-    <form method="get" action="/listar_colaboraciones" style="margin-top:10px;">
-      <button type="submit">Mostrar todo</button>
-    </form>
-  </section>
-
-
-  <table style="width:100%; border-collapse:collapse; margin-top:12px;">
-    <thead>
-      <tr style="background:#f0f0f0;">
-        <th style="padding:8px;">ID</th>
-        <th style="padding:8px;">Proyecto</th>
-        <th style="padding:8px;">Artista</th>
-        <th style="padding:8px;">Valor</th>
-        <th style="padding:8px;">Fecha registro</th>
-        <th style="padding:8px;">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
       {% if colaboraciones %}
-        {% for c in colaboraciones %}
-          <tr>
-            <td style="padding:8px;">{{ c.id }}</td>
-            <td style="padding:8px;">{{ c.proyecto.titulo }}</td>
-            <td style="padding:8px;">{{ c.artista.nombre }}</td>
-            <td style="padding:8px;">{{ c.valor }}</td>
-            <td style="padding:8px;">{{ c.fecha_registro }}</td>
-            <td style="padding:8px;">
-              <a href="/form_actualizar_colaboracion?id={{ c.id }}" class="btn">Editar</a>
-              <form method="post" action="/eliminar_colaboracion" style="display:inline;">
-                {% csrf_token %}
-                <input type="hidden" name="colaboracion_id" value="{{ c.id }}">
-                <button type="submit" onclick="return confirm('¿Eliminar esta colaboración?')">Eliminar</button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
+        <div class="table-responsive">
+          <table class="table table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Proyecto</th>
+                <th>Artista</th>
+                <th>Valor</th>
+                <th>Fecha registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in colaboraciones %}
+                <tr>
+                  <td class="text-muted">{{ c.id }}</td>
+                  <td>{{ c.proyecto.titulo }}</td>
+                  <td>{{ c.artista.nombre }}</td>
+                  <td>{{ c.valor }}</td>
+                  <td class="text-muted">{{ c.fecha_registro }}</td>
+                  <td>
+                    <a href="/form_actualizar_colaboracion?id={{ c.id }}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+                    <form method="post" action="/eliminar_colaboracion" style="display:inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="colaboracion_id" value="{{ c.id }}" />
+                      <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Eliminar esta colaboración?')">Eliminar</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       {% else %}
-        <tr><td colspan="6" style="text-align:center; padding:10px;">No se encontraron resultados.</td></tr>
+        <div class="text-center py-5">
+          <div class="fs-1">🎨</div>
+          <h5 class="mt-2">Aún no hay colaboraciones</h5>
+          <p class="muted-small">Pulsa "Registrar nueva" para crear la primera colaboración.</p>
+        </div>
       {% endif %}
-    </tbody>
-  </table>
+    </div>
+  </div>
 {% endblock %}

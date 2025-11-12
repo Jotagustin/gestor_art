@@ -3,37 +3,37 @@
 {% block title %}Actualizar Colaboración{% endblock %}
 
 {% block content %}
-  <h1>Actualizar Colaboración</h1>
-  <form method="post" action="/actualizar_colaboracion">
+  <h1 class="mb-3">Actualizar Colaboración</h1>
+  <form method="post" action="/actualizar_colaboracion" class="row g-3">
     {% csrf_token %}
     <input type="hidden" name="colaboracion_id" value="{{ colaboracion.id }}" />
-    <div>
-      <label>Proyecto:</label>
-      <select name="proyecto_id" required>
+    <div class="col-md-6">
+      <label class="form-label">Proyecto:</label>
+      <select class="form-select" name="proyecto_id" required>
         {% for p in proyectos %}
           <option value="{{ p.id }}" {% if p.id == colaboracion.proyecto.id %}selected{% endif %}>{{ p.titulo }}</option>
         {% endfor %}
       </select>
     </div>
-    <div>
-      <label>Artista:</label>
-      <select name="artista_id" required>
+    <div class="col-md-6">
+      <label class="form-label">Artista:</label>
+      <select class="form-select" name="artista_id" required>
         {% for a in artistas %}
           <option value="{{ a.id }}" {% if a.id == colaboracion.artista.id %}selected{% endif %}>{{ a.nombre }}</option>
         {% endfor %}
       </select>
     </div>
-    <div>
-      <label>Valor:</label>
-      <input type="number" name="valor" value="{{ colaboracion.valor }}" required />
+    <div class="col-md-4">
+      <label class="form-label">Valor:</label>
+      <input class="form-control" type="number" name="valor" value="{{ colaboracion.valor }}" required />
     </div>
-    <div>
-      <label>Fecha registro:</label>
-      <input type="text" name="fecha_registro" value="{{ colaboracion.fecha_registro }}" required />
+    <div class="col-md-4">
+      <label class="form-label">Fecha registro:</label>
+      <input class="form-control" type="text" name="fecha_registro" value="{{ colaboracion.fecha_registro }}" required />
     </div>
-    <div style="margin-top:8px">
-      <button type="submit" class="btn">Actualizar</button>
-      <a href="/listar_colaboraciones" class="btn">Volver</a>
+    <div class="col-12 mt-2">
+      <button type="submit" class="btn btn-primary">Actualizar</button>
+      <a href="/listar_colaboraciones" class="btn btn-secondary ms-2">Volver</a>
     </div>
   </form>
 {% endblock %}

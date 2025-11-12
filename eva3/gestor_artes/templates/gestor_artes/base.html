@@ -4,41 +4,81 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{% block title %}Proyecto Artísticos{% endblock %}</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-      body{font-family: Arial, sans-serif; margin:20px}
-      nav a{margin-right:12px}
-      .mensaje{padding:10px;background:#f0f8ff;border:1px solid #bcd}
-      table{border-collapse:collapse;width:100%}
-      table th, table td{border:1px solid #ddd;padding:8px;text-align:left}
-      .acciones form{display:inline}
-      .btn{padding:6px 10px;border:1px solid #666;background:#eee;border-radius:4px;text-decoration:none;color:#000}
+      :root{--bg:#f6f9fc;--card:#ffffff}
+      body{padding-top:70px;background:var(--bg);color:#222}
+      .mensaje{padding:10px}
+      .nav-link{margin-right:8px}
+      /* tarjeta de aplicación reutilizable */
+      .app-card{background:var(--card);border-radius:12px;padding:0;overflow:hidden}
+      .app-card .card-header{background:linear-gradient(90deg,rgba(13,110,253,0.08),rgba(13,110,253,0.02));border-bottom:1px solid rgba(0,0,0,0.03)}
+      .app-hero{padding:24px 28px}
+      .muted-small{color:#6c757d;font-size:.9rem}
     </style>
   </head>
   <body>
     <header>
-      <nav>
-        <a href="/">Inicio</a>
-        <a href="/menu_admin">Menu Admin</a>
-        <a href="/menu_operador">Menu Operador</a>
-        <a href="/listar_colaboraciones">Colaboraciones</a>
-        <a href="/listar_historial">Historial</a>
-        {% if request.session.usuario %}
-          <span style="margin-left:12px">Usuario: {{ request.session.usuario }}</span>
-          <a href="/cerrar_sesion" class="btn">Cerrar sesión</a>
-        {% endif %}
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="/">Proyecto Artísticos</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item"><a class="nav-link" href="/menu_admin">Menu Admin</a></li>
+              <li class="nav-item"><a class="nav-link" href="/menu_operador">Menu Operador</a></li>
+              <li class="nav-item"><a class="nav-link" href="/listar_colaboraciones">Colaboraciones</a></li>
+              <li class="nav-item"><a class="nav-link" href="/listar_historial">Historial</a></li>
+            </ul>
+            <div class="d-flex">
+              {% if request.session.usuario %}
+                <span class="navbar-text text-white me-2">Usuario: {{ request.session.usuario }}</span>
+                <a href="/cerrar_sesion" class="btn btn-outline-light">Cerrar sesión</a>
+              {% else %}
+                <a href="/" class="btn btn-outline-light">Iniciar sesión</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
       </nav>
-      <hr />
     </header>
 
-    {% if mensaje %}
-      <div class="mensaje">{{ mensaje }}</div>
-    {% endif %}
+    <main class="container mt-4">
 
-    {% block content %}{% endblock %}
+      {# Mensajes mostrados por las vistas #}
+      {% if mensaje %}
+        <div class="alert alert-info">{{ mensaje }}</div>
+      {% endif %}
+      {% if r2 %}
+        <div class="alert alert-danger">{{ r2 }}</div>
+      {% endif %}
+      {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+      {% if errors %}
+        {% for e in errors %}
+          <div class="alert alert-danger">{{ e }}</div>
+        {% endfor %}
+      {% endif %}
+      {% if messages %}
+        {% for m in messages %}
+          <div class="alert alert-info">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
 
-    <footer>
+      {% block content %}{% endblock %}
+
+    </main>
+
+    <footer class="container mt-4 mb-4">
       <hr />
-      <small>Proyecto Artísticos - Plantillas básicas</small>
+      <small class="text-muted">Proyecto Artísticos - Plantillas básicas</small>
     </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

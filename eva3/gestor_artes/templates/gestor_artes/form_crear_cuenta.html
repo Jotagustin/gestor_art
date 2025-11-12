@@ -1,10 +1,10 @@
 {% extends 'gestor_artes/base.html' %}
 
-{% block title %}Iniciar sesión{% endblock %}
+{% block title %}Crear cuenta{% endblock %}
 
 {% block content %}
-  <h1 class="mb-3">Iniciar sesión</h1>
-  <form method="post" action="/iniciar_sesion" class="row g-3">
+  <h1 class="mb-3">Crear cuenta</h1>
+  <form method="post" action="/crear_cuenta" class="row g-3">
     {% csrf_token %}
     <div class="col-12">
       <label class="form-label">Nombre de usuario:</label>
@@ -15,8 +15,8 @@
       <input class="form-control" type="password" name="password" maxlength="20" required />
     </div>
     <div class="col-12 mt-2">
-      <button type="submit" class="btn btn-primary">Entrar</button>
-      <a href="/form_crear_cuenta" class="btn btn-secondary ms-2">Crear cuenta</a>
+      <button type="submit" class="btn btn-primary">Crear cuenta</button>
+      <a href="/" class="btn btn-secondary ms-2">Volver al login</a>
     </div>
   </form>
 {% endblock %}

@@ -1,53 +1,121 @@
 from django.shortcuts import render
-from .models import Colaboraciones, Proyecto, Artistas
+from .models import Colaboraciones, Proyecto, Artistas, Usuario, Rol
 
-# 🧩 Login / Sesión
 def mostrarLogin(request):
-    pass
+    return render(request, 'gestor_artes/login.html')
 
-def iniciarSesion(request):
-    pass
+def mostrarFormCrearCuenta(request):
+    return render(request, 'gestor_artes/form_crear_cuenta.html')
+
+def validar_usuario(request):
+    try:
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
+
+        if not username or not password:
+            return render(request, 'gestor_artes/login.html', {'mensaje': 'Faltan credenciales'})
+
+        usuario = Usuario.objects.filter(username=username, password=password).first()
+
+        if usuario:
+            request.session['usuario'] = usuario.username
+
+            rolActual = (usuario.rolname).upper()
+            if rolActual == 'ARTISTA':
+                return render(request, 'gestor_artes/menu_operador.html', {'mensaje': f'Bienvenido {usuario.username}'})
+            if rolActual == 'ADMIN':
+                return render(request, 'gestor_artes/menu_admin.html', {'mensaje': f'Bienvenido {usuario.username}'})
+            return render(request, 'gestor_artes/login.html', {'mensaje': 'Rol no reconocido'})
+
+        return render(request, 'gestor_artes/login.html', {'r2': 'Error De Usuario o Contraseña!!'})
+
+    except Exception as error:
+        print('validar_usuario fallo:', error)
+        return render(request, 'gestor_artes/login.html', {'mensaje': 'Error interno'})
+
+def iniciar_sesion(request):
+    if request.method == "POST":
+        return validar_usuario(request)
+    return render(request, 'gestor_artes/login.html')
+
+def crear_cuenta(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    Usu = Usuario(username=username, password=password, rolname=Rol.ARTISTA)
+    Usu.save()
+    mensaje = ''
+    return render(request, 'gestor_artes/login.html', {'mensaje': mensaje})
 
 def cerrarSesion(request):
-    pass
+    try:
+        del request.session['usuario']
+    except Exception:
+        pass
+    return render(request, 'gestor_artes/login.html', {'mensaje': 'Sesión cerrada'})
 
-
-# 🧩 Menús
 def mostrarMenuAdmin(request):
-    pass
+    return render(request, 'gestor_artes/menu_admin.html')
 
 def mostrarMenuOperador(request):
-    pass
+    return render(request, 'gestor_artes/menu_operador.html')
 
-
-# 🧩 Colaboraciones (Operador)
 def mostrarListarColaboraciones(request):
     colaboraciones = Colaboraciones.objects.all()
     datos = {'colaboraciones': colaboraciones}
     return render(request, 'gestor_artes/listar_colaboraciones.html', datos)
 
-
 def mostrarFormRegistrarColaboracion(request):
-    pass
+    return render(request, 'gestor_artes/form_registrar_colaboraciones.html', {
+        'proyectos': [],
+        'artistas': [],
+    })
 
 def registrarColaboracion(request):
-    pass
+    return render(request, 'gestor_artes/listar_colaboraciones.html', {
+        'colaboraciones': [],
+        'proyectos': [],
+    })
 
 def mostrarFormActualizarColaboracion(request):
-    pass
+    return render(request, 'gestor_artes/form_actualizar_colaboraciones.html', {
+        'colaboracion': None,
+        'proyectos': [],
+        'artistas': [],
+    })
 
 def actualizarColaboracion(request):
-    pass
+    return render(request, 'gestor_artes/listar_colaboraciones.html', {
+        'colaboraciones': [],
+        'proyectos': [],
+    })
 
 def eliminarColaboracion(request):
-    pass
+    return render(request, 'gestor_artes/listar_colaboraciones.html', {
+        'colaboraciones': [],
+        'proyectos': [],
+    })
 
-
-# 🧩 Historial (Admin)
 def mostrarListarHistorial(request):
-    pass
+    return render(request, 'gestor_artes/listar_historial.html', {
+        'historial': [],
+    })
 
+def mostrarFormCrearProyecto(request):
+    return render(request, 'gestor_artes/form_crear_proyecto.html')
 
+def registrarProyecto(request):
+    if request.method != 'POST':
+        return render(request, 'gestor_artes/form_crear_proyecto.html', {'mensaje': 'Método no permitido'})
+
+    titulo = request.POST.get('titulo', '').strip()
+    if not titulo:
+        return render(request, 'gestor_artes/form_crear_proyecto.html', {'mensaje': 'El título es obligatorio'})
+
+    p = Proyecto(titulo=titulo)
+    p.save()
+    return render(request, 'gestor_artes/menu_admin.html', {'mensaje': f'Proyecto "{titulo}" creado'})
+
+# Funciones de filtrado (de la versión local)
 def filtroEmpieza(request):
     filtro = request.POST['txtfil']
     colabs = Colaboraciones.objects.filter(proyecto__titulo__istartswith=filtro)

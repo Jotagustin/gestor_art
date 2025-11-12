@@ -7,8 +7,10 @@ urlpatterns = [
 
     # Login / Session
     path('', views.mostrarLogin, name='mostrar_login'),
-    path('iniciar_sesion', views.iniciarSesion, name='iniciar_sesion'),
+    path('iniciar_sesion', views.iniciar_sesion, name='iniciar_sesion'),
     path('cerrar_sesion', views.cerrarSesion, name='cerrar_sesion'),
+    path('form_crear_cuenta', views.mostrarFormCrearCuenta, name='mostrar_form_crear_cuenta'),
+    path('crear_cuenta', views.crear_cuenta, name='crear_cuenta'),
 
     # Menús
     path('menu_admin', views.mostrarMenuAdmin, name='mostrar_menu_admin'),
